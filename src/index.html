@@ -1,0 +1,281 @@
+<!--original-->
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Algoritmo de Dijkstra</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <h1>Algoritmo de Dijkstra</h1>
+      <p>Problema del camino mínimo en grafos dirigidos</p>
+    </header>
+
+  <!-- PANTALLA 1: Configuración inicial -->
+    <section id="screen1" class="screen active">
+  <div class="setup-layout">
+    <div class="setup-illustration" aria-hidden="true">
+      <div class="illustration-window">
+        <div class="mini-network">
+          <span class="mini-node node-a"></span>
+          <span class="mini-node node-b"></span>
+          <span class="mini-node node-c"></span>
+          <span class="mini-node node-d"></span>
+
+          <i class="mini-edge edge-one"></i>
+          <i class="mini-edge edge-two"></i>
+          <i class="mini-edge edge-three"></i>
+        </div>
+      </div>
+      <div class="illustration-note">
+        <strong>Dijkstra</strong>
+        <span>D(A) = 0</span>
+        <span>D(B) = 4</span>
+        <span>D(C) = ∞</span>
+      </div>
+    </div>
+    <div class="card setup-card">
+      <div class="section-heading">
+        <span class="heading-icon">⚙</span>
+        <h2>Configuración del grafo</h2>
+      </div>
+      <div class="form-group node-count">
+        <label for="n">Número de nodos (7 a 16):</label>
+        <input type="number" id="n" min="7" max="16" value="8">
+      </div>
+      <div class="form-group">
+        <label>Modo de generación:</label>
+
+        <div class="mode-options">
+          <!-- MODO ALEATORIO. -->
+          <label class="mode-card">
+            <input type="radio" name="mode" value="random" checked>
+            <span class="mode-icon">▦</span>
+            <span class="mode-copy">
+              <strong>Aleatorio</strong>
+              <small>Genera automáticamente las conexiones y sus pesos.</small>
+            </span>
+            <span class="radio-indicator"></span>
+          </label>
+          <!-- MODO MANUAL. -->
+          <label class="mode-card">
+            <input type="radio" name="mode" value="manual">
+            <span class="mode-icon">✎</span>
+            <span class="mode-copy">
+              <strong>Manual</strong>
+              <small>Define las conexiones y sus pesos manualmente.</small>
+            </span>
+            <span class="radio-indicator"></span>
+          </label>
+        </div>
+      </div>
+      <button id="btnCreate" class="btn btn-primary btn-create">
+        <span aria-hidden="true">⌘</span>
+        Generar grafo
+        <span aria-hidden="true">→</span>
+      </button>
+      <p id="cfgMsg" class="msg-error"></p>
+    </div>
+    <aside class="help-card">
+      <div class="help-title">
+        <span>💡</span>
+        <h2>¿Qué hace?</h2>
+      </div>
+      <p>
+        Encuentra el camino mínimo entre un nodo de origen y un nodo de
+        destino en un grafo dirigido, mostrando el procedimiento
+        paso a paso.
+      </p>
+    </aside>
+  </div>
+</section>
+
+  <!-- PANTALLA 2: Conexiones y Selección de Nodos -->
+    <section id="screen2" class="screen">
+      <div class="top-nav">
+        <button id="btnBackTo1" class="btn btn-secondary">
+          ◀ Regresar a Configuración
+        </button>
+      </div>
+
+      <div class="screen2-grid">
+        <!-- Columna Izquierda: Grafo -->
+        <div class="col-left">
+          <div id="screen2GraphSlot" class="graph-slot"></div>
+        </div>
+        <!-- Columna Derecha: Opciones y Selección -->
+        <div class="col-right">
+          <!-- Modo Manual: Define las conexiones -->
+          <div id="manualCard" class="card" hidden>
+            <h2>Define las conexiones</h2>
+            <div class="inline-form">
+              <div class="form-item">
+                <label for="eu">Desde:</label>
+                <select id="eu"></select>
+              </div>
+
+              <div class="form-item">
+                <label for="ev">Hasta:</label>
+                <select id="ev"></select>
+              </div>
+
+              <div class="form-item">
+                <label for="ew">Peso:</label>
+                <input type="number" id="ew" min="1" max="20">
+              </div>
+
+              <button id="btnAddEdge" class="btn btn-secondary">
+                Agregar arista
+              </button>
+
+              <button id="btnClearEdges" class="btn btn-danger">
+                Quitar todas las aristas
+              </button>
+            </div>
+            <p id="edgeMsg" class="msg-error"></p>
+          </div>
+          <!-- Selección de Origen y Destino -->
+          <div class="card">
+            <h2>2. Elegir origen y destino</h2>
+            <div class="inline-form">
+              <div class="form-item">
+                <label for="src">Origen:</label>
+                <select id="src"></select>
+              </div>
+              <div class="form-item">
+                <label for="dst">Destino:</label>
+                <select id="dst"></select>
+              </div>
+              <button id="btnRun" class="btn btn-primary">
+                Ejecutar Dijkstra
+              </button>
+            </div>
+            <p id="runMsg" class="msg-error"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  <!-- PANTALLA 3: Visualización y Simulación -->
+    <section id="screen3" class="screen">
+      <div class="top-nav">
+        <button id="btnBackTo2" class="btn btn-secondary">
+          ◀ Cambiar Origen/Destino
+        </button>
+      </div>
+      <div class="screen3-grid">
+  <!-- Columna Izquierda: Grafo -->
+        <div class="col-left">
+          <div id="screen3GraphSlot" class="graph-slot"></div>
+        </div>
+  <!-- Columna Central: Control y Tabla -->
+        <div class="col-center">
+          <!-- TARJETA 1: controles para avanzar en Dijkstra. -->
+          <div class="card execution-card">
+            <h2>Ejecución paso a paso</h2>
+            <div class="ctrl">
+              <button id="bPrev" class="btn btn-secondary">
+                ◀ Anterior
+              </button>
+              <button id="bNext" class="btn btn-primary">
+                Siguiente ▶
+              </button>
+              <button id="bPlay" class="btn btn-secondary">
+                ▶ Auto
+              </button>
+            </div>
+          </div>
+          <!-- TARJETA 2: tabla donde se muestran las etiquetas.-->
+          <div class="card table-card">
+            <h2>Tabla de etiquetas</h2>
+            <div id="tableCard" class="table-container"></div>
+            <p class="legend-note"></p>
+          </div>
+          <!-- TARJETA 3: explicación de las decisiones del algoritmo.-->
+          <div class="card explanation-card">
+            <h2>Decisiones del algoritmo</h2>
+            <div id="logCard" class="log-container"></div>
+          </div>
+        </div>
+
+        <!-- COLUMNA 3: RESULTADO DEL ALGORITMO-->
+        <div class="col-right">
+          <!-- Nueva tarjeta visual para presentar la solución. -->
+          <div class="card result-card">
+            <h2>🏆 Resultado final</h2>
+            <div class="result-item">
+              <span class="result-label">
+                Distancia mínima
+              </span>
+              <strong id="resultDistance" class="result-value">
+                —
+              </strong>
+            </div>
+            <div class="result-item">
+              <span class="result-label">
+                Cantidad de caminos mínimos
+              </span>
+              <strong id="resultCount" class="result-value">
+                —
+              </strong>
+            </div>
+            <div class="result-paths">
+              <h3>Camino(s) mínimo(s):</h3>
+              <div id="resultPaths" class="result-path-list">
+                <p>El camino mínimo aparecerá aquí.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <!-- Elemento Grafo Reutilizable que se mueve entre pantallas -->
+    <div id="graphCard" class="card graph-card">
+      <div class="graph-header">
+        <h2>Visualización del grafo</h2>
+        <span class="hint">
+          Arrastra los nodos para acomodarlos
+        </span>
+      </div>
+      <div class="svg-wrapper">
+        <svg
+          id="svg"
+          viewBox="0 0 800 500"
+          preserveAspectRatio="xMidYMid meet">
+        </svg>
+      </div>
+
+      <!-- LEYENDA -->
+      <div class="legend">
+        <span>
+          <i class="dot dot-visited"></i>
+          Visitado
+        </span>
+        <span>
+          <i class="dot dot-current"></i>
+          Actual
+        </span>
+        <span>
+          <i class="dot dot-not-visited"></i>
+          No visitado
+        </span>
+        <span>
+          <i class="line line-min"></i>
+          Camino mínimo
+        </span>
+        <span>
+          <i class="line line-directed"></i>
+          Conexión dirigida
+        </span>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
