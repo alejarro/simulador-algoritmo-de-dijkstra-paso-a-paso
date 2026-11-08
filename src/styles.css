@@ -617,3 +617,194 @@ table.labels-table th {
   .setup-card { padding: 20px; }
   .help-card { grid-column: auto;}
 }
+
+/* MODIFICACIÓN: evita que la página se desborde horizontalmente. */
+html {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* MODIFICACIÓN: permite mover los nodos con el dedo sin desplazar la página. */
+.svg-wrapper svg {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* MODIFICACIÓN: permite que las columnas se reduzcan al ancho del celular. */
+.screen2-grid,
+.screen3-grid,
+.setup-layout,
+.graph-slot,
+.col-left,
+.col-right,
+.col-center {
+  min-width: 0;
+}
+
+/* MODIFICACIÓN: mantiene la tabla dentro de su contenedor y permite desplazarla. */
+.table-container {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* MODIFICACIÓN: distribución de las pantallas en tablets y celulares. */
+@media (max-width: 700px) {
+  body {
+    width: 100%;
+    padding: 8px;
+    overflow-x: hidden;
+  }
+
+  .app-container {
+    width: 100%;
+    padding: 0;
+  }
+
+  .app-header {
+    margin: 8px 0 16px;
+  }
+
+  .app-header h1 {
+    font-size: clamp(1.3rem, 6vw, 1.55rem);
+  }
+
+  /* MODIFICACIÓN: las columnas pasan a una sola columna vertical. */
+  .setup-layout,
+  .screen2-grid,
+  .screen3-grid {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .setup-illustration {
+    display: none;
+  }
+
+  .setup-card {
+    padding: 18px;
+  }
+
+  .mode-options {
+    grid-template-columns: 1fr;
+  }
+
+  .help-card {
+    grid-column: auto;
+    max-width: none;
+  }
+
+  .screen3-grid > .col-right {
+    grid-column: auto;
+  }
+
+  /* MODIFICACIÓN: las tarjetas ocupan todo el ancho disponible. */
+  .graph-card,
+  .card {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px;
+  }
+
+  .graph-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  /* MODIFICACIÓN: el grafo conserva su proporción en pantallas pequeñas. */
+  .svg-wrapper {
+    width: 100%;
+    min-height: 0;
+    aspect-ratio: 8 / 5;
+  }
+
+  .svg-wrapper svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+  }
+
+  /* MODIFICACIÓN: los controles se acomodan para facilitar el uso táctil. */
+  .ctrl {
+    flex-wrap: wrap;
+  }
+
+  .ctrl .btn {
+    flex: 1 1 110px;
+    min-height: 44px;
+  }
+
+  .btn {
+    min-height: 44px;
+  }
+
+  /* MODIFICACIÓN: los formularios se organizan verticalmente. */
+  .inline-form {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .inline-form .form-item,
+  .inline-form button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .legend {
+    gap: 8px;
+    font-size: 0.7rem;
+  }
+
+  .result-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .log-container {
+    max-height: 280px;
+  }
+
+  /* MODIFICACIÓN: la tabla puede desplazarse horizontalmente con el dedo. */
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  table.labels-table {
+    min-width: max-content;
+  }
+
+  .top-nav .btn {
+    width: 100%;
+  }
+}
+
+/* MODIFICACIÓN: ajustes adicionales para celulares muy pequeños. */
+@media (max-width: 400px) {
+  body {
+    padding: 6px;
+  }
+
+  .setup-card,
+  .card,
+  .graph-card {
+    padding: 10px;
+  }
+
+  .app-header h1 {
+    font-size: 1.3rem;
+  }
+
+  .ctrl .btn {
+    flex: 1 1 100%;
+  }
+
+  .result-value {
+    font-size: 1.7rem;
+  }
+}

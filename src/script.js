@@ -681,19 +681,50 @@ function render() {
 let dragId = null;
 function attachDragEvents() {
   const svg = $('svg');
-  svg.querySelectorAll('.node').forEach(c => {
-    c.onmousedown = e => {
-      dragId = +c.dataset.id;
+  if (svg.dataset.dragEventsAttached === 'true') return;
+  svg.dataset.dragEventsAttached = 'true';
+
+  // MODIFICACIÓN: pointerdown funciona tanto al presionar con mouse como al tocar con el dedo.
+  svg.addEventListener('pointerdown', e => {
+    const node = e.target.closest('.node');
+
+    if (!node) return;
+
+    dragId = Number(node.dataset.id);
+
+    // MODIFICACIÓN: mantiene capturado el movimiento aunque el dedo salga del nodo.
+    svg.setPointerCapture(e.pointerId);
+
       e.preventDefault();
-    };
   });
-  svg.onmousemove = e => {
+
+  // MODIFICACIÓN: pointermove reemplaza mousemove y permite mover nodos en celulares.
+  svg.addEventListener('pointermove', e => {
     if (dragId === null) return;
+
     const rect = svg.getBoundingClientRect();
-    pos[dragId].x = (e.clientX - rect.left) * (W / rect.width);
-    pos[dragId].y = (e.clientY - rect.top) * (H / rect.height);
-    render();};
-  svg.onmouseup = svg.onmouseleave = () => { dragId = null; };}
+
+    // Convierte la posición del dedo o mouse a las coordenadas internas del SVG.
+    const x = (e.clientX - rect.left) * (W / rect.width);
+    const y = (e.clientY - rect.top) * (H / rect.height);
+
+    // Evita que el nodo pueda salir de los límites del grafo.
+    pos[dragId].x = Math.max(R, Math.min(W - R, x));
+    pos[dragId].y = Math.max(R, Math.min(H - R, y));
+
+    render();
+    e.preventDefault();
+  });
+
+  // MODIFICACIÓN: finaliza el movimiento al levantar el dedo o soltar el mouse.
+  const stopDragging = () => {
+    dragId = null;
+  };
+
+  svg.addEventListener('pointerup', stopDragging);
+  svg.addEventListener('pointercancel', stopDragging);
+  svg.addEventListener('lostpointercapture', stopDragging);
+}
 
 // --- Asignación de Eventos Iniciales ---
 window.onload = () => {
